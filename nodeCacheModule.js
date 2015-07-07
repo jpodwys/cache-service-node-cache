@@ -20,6 +20,10 @@ function nodeCacheModule(config){
   self.checkOnPreviousEmpty = (typeof config.checkOnPreviousEmpty === 'boolean') ? config.checkOnPreviousEmpty : true;
 
   /**
+   ******************************************* PUBLIC FUNCTIONS *******************************************
+   */
+
+  /**
    * Get the value associated with a given key
    * @param {string} key
    * @param {function} cb
@@ -94,21 +98,6 @@ function nodeCacheModule(config){
   }
 
   /**
-   * Flush all keys and values
-   * @param {function} cb
-   */
-  self.flushAll = function(cb){
-    log(false, 'Attempting to flush all data:');
-    try {
-      self.db.flushAll();
-      log(false, 'Flushing all data from cache of type ' + this.type);
-    } catch (err) {
-      log(true, 'Flush failed for cache of type ' + this.type, err);
-    }
-    if(cb) cb();
-  }
-
-  /**
    * Delete the provided keys and their associated values
    * @param {array} keys
    * @param {function} cb
@@ -125,6 +114,25 @@ function nodeCacheModule(config){
       log(true, 'Delete failed for cache of type ' + this.type, err);
     }
   }
+
+  /**
+   * Flush all keys and values
+   * @param {function} cb
+   */
+  self.flushAll = function(cb){
+    log(false, 'Attempting to flush all data:');
+    try {
+      self.db.flushAll();
+      log(false, 'Flushing all data from cache of type ' + this.type);
+    } catch (err) {
+      log(true, 'Flush failed for cache of type ' + this.type, err);
+    }
+    if(cb) cb();
+  }
+
+  /**
+   ******************************************* PRIVATE FUNCTIONS *******************************************
+   */
 
   /**
    * Initialize nodeCacheModule given the provided constructor params
