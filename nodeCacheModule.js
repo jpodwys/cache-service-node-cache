@@ -120,7 +120,7 @@ function nodeCacheModule(config){
    * @param {function} cb
    */
   self.flushAll = function(cb){
-    log(false, 'Attempting to flush all data:');
+    log(false, 'Attempting to flush all data.');
     try {
       self.db.flushAll();
       log(false, 'Flushing all data from cache of type ' + this.type);
