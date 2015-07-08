@@ -15,7 +15,7 @@ function nodeCacheModule(config){
   var self = this;
   config = config || {};
   self.verbose = config.verbose || false;
-  self.expiration = config.defaultExpiration || 900;
+  self.defaultExpiration = config.defaultExpiration || 900;
   self.readOnly = (typeof config.readOnly === 'boolean') ? config.readOnly : false;
   self.checkOnPreviousEmpty = (typeof config.checkOnPreviousEmpty === 'boolean') ? config.checkOnPreviousEmpty : true;
 
@@ -66,7 +66,7 @@ function nodeCacheModule(config){
     log(false, 'Attempting to set key:', {key: key, value: value});
     try {
       if(!self.readOnly){
-        expiration = expiration || self.expiration;
+        expiration = expiration || self.defaultExpiration;
         cb = cb || noop;
         self.db.set(key, value, expiration, cb);
       }
@@ -85,7 +85,7 @@ function nodeCacheModule(config){
     log(false, 'Attempting to mset data:', {data: obj});
     for(key in obj){
       if(obj.hasOwnProperty(key)){
-        var tempExpiration = expiration || self.expiration;
+        var tempExpiration = expiration || self.defaultExpiration;
         var value = obj[key];
         if(typeof value === 'object' && value.cacheValue){
           tempExpiration = value.expiration || tempExpiration;
