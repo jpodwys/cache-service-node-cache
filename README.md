@@ -1,6 +1,6 @@
 # cache-service-node-cache
 
-* A node-cache plugin for [cache-service](https://github.com/jpodwys/cache-service)
+* A [node-cache](https://github.com/tcs-de/nodecache) plugin for [cache-service](https://github.com/jpodwys/cache-service)
 * AND a standalone node-cache wrapper
 
 # Basic Usage
