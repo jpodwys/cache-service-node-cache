@@ -155,7 +155,7 @@ function nodeCacheModule(config){
    * @param {object} data
    */
   function log(isError, message, data){
-    var indentifier = 'cacheService: ';
+    var indentifier = 'nodeCacheModule: ';
     if(self.verbose || isError){
       if(data) console.log(indentifier + message, data);
       else console.log(indentifier + message);
