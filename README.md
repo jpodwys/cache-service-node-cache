@@ -105,9 +105,9 @@ Delete a key or an array of keys and their associated values.
 
 ## .flush(cb)
 
-Flush all keys and values from an instance of cache-service.
-
 > When used with `cache-service`, use `cacheService.flushAll()`.
+
+Flush all keys and values from an instance of cache-service.
 
 * callback: type: function
 
