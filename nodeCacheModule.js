@@ -145,7 +145,7 @@ function nodeCacheModule(config){
       log(true, 'Node-cache client not created:', err);
       self.db = false;
     }
-    self.type = config.type || 'node-cache-standalone';
+    self.type = config.type || 'node-cache';
   }
 
   /**
