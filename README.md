@@ -32,7 +32,7 @@ If you're using `cache-service-node-cache` with `cache-service`, the benefits ar
 An arbitrary identifier you can assign so you know which cache is responsible for logs and errors.
 
 * type: string
-* default: 'redis'
+* default: 'node-cache'
 
 ## defaultExpiration
 
@@ -46,14 +46,14 @@ The expiration to include when executing cache set commands. Can be overridden v
 
 > When used with `cache-service`, this property is overridden by `cache-service`'s `verbose` value.
 
-When false, `cache-service-redis` will log only errors. When true, `cache-service-redis` will log all activity (useful for testing and debugging).
+When false, `cache-service-node-cache` will log only errors. When true, `cache-service-node-cache` will log all activity (useful for testing and debugging).
 
 * type: boolean
 * default: false
 
 # API
 
-Although this is a redis wrapper, its API differs in some small cases from redis's own API both because the redis API is sometimes dumb and because all `cache-service` compatible cache modules match [`cache-service`'s API](https://github.com/jpodwys/cache-service#api).
+Although this is a node-cache wrapper, its API differs in some small cases from node-cache's own API because all `cache-service`-compatible cache modules match [`cache-service`'s API](https://github.com/jpodwys/cache-service#api).
 
 ## .get(key, callback (err, response))
 
@@ -111,11 +111,11 @@ Flush all keys and values from an instance of cache-service.
 
 * callback: type: function
 
-# More Redis Methods
+# More Node-Cache Methods
 
-If you need access to one of redis's other functions, you can get at the underlying [`node_redis` instance](https://github.com/mranney/node_redis) by tapping into the `.db` property like so:
+If you need access to one of node-cache's other functions, you can get at the underlying [`node-cache` instance](https://github.com/tcs-de/nodecache) by tapping into the `.db` property like so:
 
 ```javascript
-var underlyingRedisInstance = redisCacheModule.db;
-underlyingRedisInstance.SOME_OTHER_REDIS_FUNCTION();
+var underlyingNodeCacheInstance = nodeCacheModule.db;
+underlyingNodeCacheInstance.SOME_OTHER_NODE_CACHE_FUNCTION();
 ```
