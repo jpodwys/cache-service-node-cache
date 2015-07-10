@@ -22,7 +22,7 @@ nodeCache.set('key', 'value');
 
 If you're using `cache-service-node-cache` with `cache-service`, the benefits are obvious. However, there are also a couple of reasons you might prefer it to using vanilla [node-cache](https://www.npmjs.com/package/node-cache):
 
-* It adds an excellent `.mset()` implementation which allow you to sset expirations on a per key, per function call, and/or per `cache-service-node-cache` instance basis (Vanilla node-cache does not offer `.mset()` at all).
+* It adds an excellent `.mset()` implementation which allow you to set expirations on a per key, per function call, and/or per `cache-service-node-cache` instance basis (Vanilla node-cache does not offer `.mset()` at all).
 * Built-in logging with a `verbose` flag.
 
 # Cache Module Configuration Options
@@ -103,11 +103,9 @@ Delete a key or an array of keys and their associated values.
 * err: type: object
 * count: type: int
 
-## .flushAll([cb])
+## .flush([cb])
 
-> When used with `cache-service`, use `cacheService.flush()`.
-
-Flush all keys and values from an instance of cache-service.
+Flush all keys and values from.
 
 * callback: type: function
 

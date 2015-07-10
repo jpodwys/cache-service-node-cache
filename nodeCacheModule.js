@@ -4,7 +4,7 @@ var nodeCache = require('node-cache');
  * nodeCacheModule constructor
  * @constructor
  * @param config: {
- *    type:                 {string | 'node-cache-standalone'}
+ *    type:                 {string | 'node-cache'}
  *    verbose:              {boolean | false},
  *    expiration:           {integer | 900},
  *    readOnly:             {boolean | false},
@@ -119,7 +119,7 @@ function nodeCacheModule(config){
    * Flush all keys and values
    * @param {function} cb
    */
-  self.flushAll = function(cb){
+  self.flush = function(cb){
     log(false, 'Attempting to flush all data.');
     try {
       self.db.flushAll();

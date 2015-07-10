@@ -6,7 +6,7 @@ var key = 'key';
 var value = 'value';
 
 beforeEach(function(){
-  nodeCache.flushAll();
+  nodeCache.flush();
 });
 
 describe('nodeCacheModule Tests', function () {
@@ -31,13 +31,13 @@ describe('nodeCacheModule Tests', function () {
       done();
     });
   });
-  it('Setting several keys then calling .flushAll() should remove all keys', function (done) {
+  it('Setting several keys then calling .flush() should remove all keys', function (done) {
     nodeCache.set(key, value);
     nodeCache.set('key2', 'value2');
     nodeCache.set('key3', 'value3');
     var keyCount = nodeCache.db.getStats().keys;
     expect(keyCount).toBe(3);
-    nodeCache.flushAll();
+    nodeCache.flush();
     var keyCount = nodeCache.db.getStats().keys;
     expect(keyCount).toBe(0);
     done();
