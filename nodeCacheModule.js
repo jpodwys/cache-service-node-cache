@@ -72,7 +72,7 @@ function nodeCacheModule(config){
    * @param {integer} expiration
    * @param {function} cb
    */
-  self.set = function(key, value, expiration, cb){
+  self.set = function(){
 
     var key = arguments[0];
     var value = arguments[1];
@@ -83,8 +83,8 @@ function nodeCacheModule(config){
     log(false, 'Attempting to set key:', {key: key, value: value});
     try {
       if(!self.readOnly){
-        expiration = (expiration) ? (expiration * 1000) : self.defaultExpiration;
-        var exp = expiration + Date.now();
+        expiration = expiration || self.defaultExpiration;
+        var exp = (expiration * 1000) + Date.now();
         cb = cb || noop;
         self.db.set(key, value, exp, cb);
         if(refresh){
