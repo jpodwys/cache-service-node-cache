@@ -83,14 +83,14 @@ function nodeCacheModule(config){
     var expiration = arguments[2] || null;
     var refresh = (arguments.length == 5) ? arguments[3] : null;
     var cb = (arguments.length == 5) ? arguments[4] : arguments[3];
+    cb = cb || noop;
 
     log(false, 'Attempting to set key:', {key: key, value: value});
     try {
       if(!self.readOnly){
         expiration = expiration || self.defaultExpiration;
         var exp = (expiration * 1000) + Date.now();
-        cb = cb || noop;
-        self.db.set(key, value, exp, cb);
+        self.db.set(key, value, expiration, cb);
         if(refresh){
           refreshKeys[key] = {expiration: exp, lifeSpan: expiration, refresh: refresh};
         }
@@ -193,7 +193,7 @@ function nodeCacheModule(config){
         if(data.expiration - Date.now() < self.backgroundRefreshMinTtl){
           data.refresh(function (err, response){
             if(!err){
-              self.set(key, response, data.lifeSpan, data.refresh, noop);
+              self.set(key, response, data.lifeSpan);
             }
           });
         }
