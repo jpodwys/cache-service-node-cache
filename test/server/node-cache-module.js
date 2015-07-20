@@ -1,6 +1,6 @@
 var expect = require('expect');
 var ncModule = require('../../nodeCacheModule');
-var nodeCache = new ncModule();
+var nodeCache = new ncModule({backgroundRefreshInterval: 500});
 
 var key = 'key';
 var value = 'value';
@@ -62,6 +62,19 @@ describe('nodeCacheModule Tests', function () {
       expect(response.key3).toBe('value3');
       expect(response.key4).toBe(undefined);
       done();
+    });
+  });
+  it('Using background refresh shoult reset a nearly expired key', function (done) {
+    var refresh = function(cb){
+      cb(null, 1);
+    }
+    nodeCache.set(key, value, 1, refresh, function (err, result){ 
+      setTimeout(function(){
+        nodeCache.get(key, function (err, response){
+          expect(response).toBe(1);
+          done();
+        });
+      }, 1500);
     });
   });
 });

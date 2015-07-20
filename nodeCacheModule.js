@@ -18,6 +18,16 @@ function nodeCacheModule(config){
   self.defaultExpiration = config.defaultExpiration || 900;
   self.readOnly = (typeof config.readOnly === 'boolean') ? config.readOnly : false;
   self.checkOnPreviousEmpty = (typeof config.checkOnPreviousEmpty === 'boolean') ? config.checkOnPreviousEmpty : true;
+  self.backgroundRefreshEnabled = (typeof config.backgroundRefreshEnabled === 'boolean') ? config.backgroundRefreshEnabled : true;
+  self.backgroundRefreshInterval = config.backgroundRefreshInterval || 60000;
+  self.backgroundRefreshMinTtl = config.backgroundRefreshMinTtl || 70000;
+  var refreshKeys = {};
+
+  if(self.backgroundRefreshEnabled){
+    setInterval(function(){
+      backgroundRefresh();
+    }, self.backgroundRefreshInterval);
+  }
 
   /**
    ******************************************* PUBLIC FUNCTIONS *******************************************
@@ -63,12 +73,23 @@ function nodeCacheModule(config){
    * @param {function} cb
    */
   self.set = function(key, value, expiration, cb){
+
+    var key = arguments[0];
+    var value = arguments[1];
+    var expiration = arguments[2] || null;
+    var refresh = (arguments.length == 5) ? arguments[3] : null;
+    var cb = (arguments.length == 5) ? arguments[4] : arguments[3];
+
     log(false, 'Attempting to set key:', {key: key, value: value});
     try {
       if(!self.readOnly){
-        expiration = expiration || self.defaultExpiration;
+        expiration = (expiration) ? (expiration * 1000) : self.defaultExpiration;
+        var exp = expiration + Date.now();
         cb = cb || noop;
-        self.db.set(key, value, expiration, cb);
+        self.db.set(key, value, exp, cb);
+        if(refresh){
+          refreshKeys[key] = {expiration: exp, lifeSpan: expiration, refresh: refresh};
+        }
       }
     } catch (err) {
       log(true, 'Set failed for cache of type ' + self.type, {name: 'NodeCacheSetException', message: err});
@@ -146,6 +167,24 @@ function nodeCacheModule(config){
       self.db = false;
     }
     self.type = config.type || 'node-cache';
+  }
+
+  /**
+   * Refreshes all keys that were set with a refresh function
+   */
+  function backgroundRefresh(){
+    for(key in refreshKeys){
+      if(refreshKeys.hasOwnProperty(key)){
+        var data = refreshKeys[key];
+        if(data.expiration - Date.now() < self.backgroundRefreshMinTtl){
+          data.refresh(function (err, response){
+            if(!err){
+              self.set(key, response, data.lifeSpan, data.refresh, noop);
+            }
+          });
+        }
+      }
+    }
   }
 
   /**
