@@ -4,11 +4,14 @@ var nodeCache = require('node-cache');
  * nodeCacheModule constructor
  * @constructor
  * @param config: {
- *    type:                 {string | 'node-cache'}
- *    verbose:              {boolean | false},
- *    expiration:           {integer | 900},
- *    readOnly:             {boolean | false},
- *    checkOnPreviousEmpty  {boolean | true}
+ *    type:                     {string | 'node-cache'}
+ *    verbose:                  {boolean | false},
+ *    expiration:               {integer | 900},
+ *    readOnly:                 {boolean | false},
+ *    checkOnPreviousEmpty      {boolean | true},
+ *    backgroundRefreshEnabled  {boolean | true},
+ *    backgroundRefreshInterval {integer | 60000},
+ *    backgroundRefreshMinTtl   {integer | 70000}
  * }
  */
 function nodeCacheModule(config){
@@ -70,6 +73,7 @@ function nodeCacheModule(config){
    * @param {string} key
    * @param {string | object} value
    * @param {integer} expiration
+   * @param {function} refresh
    * @param {function} cb
    */
   self.set = function(){
