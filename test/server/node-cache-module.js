@@ -1,6 +1,9 @@
 var expect = require('expect');
 var ncModule = require('../../nodeCacheModule');
-var nodeCache = new ncModule({backgroundRefreshInterval: 500});
+var nodeCache = new ncModule({
+  backgroundRefreshEnabled: true,
+  backgroundRefreshInterval: 500
+});
 
 var key = 'key';
 var value = 'value';
