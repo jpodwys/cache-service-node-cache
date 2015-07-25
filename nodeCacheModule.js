@@ -43,10 +43,12 @@ function nodeCacheModule(config){
    * @param {string} cleanKey
    */
   self.get = function(key, cb, cleanKey){
-    log(false, 'Attempting to get key:', {key: key});
+    if(arguments.length < 2){
+      throw new exception('INCORRECT_ARGUMENT_EXCEPTION', '.get() requires 2 arguments.');
+    }
+    log(false, 'get() called:', {key: key});
     try {
       var cacheKey = (cleanKey) ? cleanKey : key;
-      log(false, 'Attempting to get key:', {key: cacheKey});
       self.db.get(cacheKey, function(err, result){
         cb(err, result);
       });
@@ -62,7 +64,10 @@ function nodeCacheModule(config){
    * @param {integer} index
    */
   self.mget = function(keys, cb, index){
-    log(false, 'Attempting to mget keys:', {keys: keys});
+    if(arguments.length < 2){
+      throw new exception('INCORRECT_ARGUMENT_EXCEPTION', '.mget() requires 2 arguments.');
+    }
+    log(false, '.mget() called:', {keys: keys});
     self.db.mget(keys, function (err, response){
       cb(err, response, index);
     });
@@ -77,13 +82,16 @@ function nodeCacheModule(config){
    * @param {function} cb
    */
   self.set = function(){
+    if(arguments.length < 2){
+      throw new exception('INCORRECT_ARGUMENT_EXCEPTION', '.set() requires a minimum of 2 arguments.');
+    }
     var key = arguments[0];
     var value = arguments[1];
     var expiration = arguments[2] || null;
     var refresh = (arguments.length == 5) ? arguments[3] : null;
     var cb = (arguments.length == 5) ? arguments[4] : arguments[3];
     cb = cb || noop;
-    log(false, 'Attempting to set key:', {key: key, value: value});
+    log(false, '.set() called:', {key: key, value: value});
     try {
       if(!self.readOnly){
         expiration = expiration || self.defaultExpiration;
@@ -94,7 +102,7 @@ function nodeCacheModule(config){
         }
       }
     } catch (err) {
-      log(true, 'Set failed for cache of type ' + self.type, {name: 'NodeCacheSetException', message: err});
+      log(true, '.set() failed for cache of type ' + self.type, {name: 'NodeCacheSetException', message: err});
     }
   }
 
@@ -105,7 +113,10 @@ function nodeCacheModule(config){
    * @param {function} cb
    */
   self.mset = function(obj, expiration, cb){
-    log(false, 'Attempting to mset data:', {data: obj});
+    if(arguments.length < 1){
+      throw new exception('INCORRECT_ARGUMENT_EXCEPTION', '.mset() requires a minimum of 1 argument.');
+    }
+    log(false, '.mset() called:', {data: obj});
     for(key in obj){
       if(obj.hasOwnProperty(key)){
         var tempExpiration = expiration || self.defaultExpiration;
@@ -126,7 +137,10 @@ function nodeCacheModule(config){
    * @param {function} cb
    */
   self.del = function(keys, cb){
-    log(false, 'Attempting to delete keys:', {keys: keys});
+    if(arguments.length < 1){
+      throw new exception('INCORRECT_ARGUMENT_EXCEPTION', '.del() requires a minimum of 1 argument.');
+    }
+    log(false, '.del() called:', {keys: keys});
     try {
       self.db.del(keys, function (err, count){
         if(cb){
@@ -143,7 +157,7 @@ function nodeCacheModule(config){
         delete refreshKeys[keys];
       }
     } catch (err) {
-      log(true, 'Delete failed for cache of type ' + this.type, err);
+      log(true, '.del() failed for cache of type ' + this.type, err);
     }
   }
 
@@ -152,13 +166,12 @@ function nodeCacheModule(config){
    * @param {function} cb
    */
   self.flush = function(cb){
-    log(false, 'Attempting to flush all data.');
+    log(false, '.flush() called');
     try {
       self.db.flushAll();
       refreshKeys = {};
-      log(false, 'Flushing all data from cache of type ' + this.type);
     } catch (err) {
-      log(true, 'Flush failed for cache of type ' + this.type, err);
+      log(true, '.flush() failed for cache of type ' + this.type, err);
     }
     if(cb) cb();
   }
