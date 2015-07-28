@@ -148,7 +148,7 @@ Flush all keys and values from.
 
 ## .db
 
-The underlying [`node-cache` instance](https://github.com/tcs-de/nodecache) is public so that, if needed, you can have access to functions I haven't abstracted.
+This is the underlying [`node-cache` instance](https://github.com/tcs-de/nodecache). If needed, you can access `node-cache` functions I haven't abstracted.
 
 # Using Background Refresh
 
