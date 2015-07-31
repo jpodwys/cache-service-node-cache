@@ -203,7 +203,7 @@ function nodeCacheModule(config){
       if(refreshKeys.hasOwnProperty(key)){
         var data = refreshKeys[key];
         if(data.expiration - Date.now() < self.backgroundRefreshMinTtl){
-          data.refresh(function (err, response){
+          data.refresh(key, function (err, response){
             if(!err){
               self.set(key, response, data.lifeSpan, data.refresh, noop);
             }

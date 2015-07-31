@@ -68,7 +68,7 @@ describe('nodeCacheModule Tests', function () {
     });
   });
   it('Using background refresh should reset a nearly expired key', function (done) {
-    var refresh = function(cb){
+    var refresh = function(key, cb){
       cb(null, 1);
     }
     nodeCache.set(key, value, 1, refresh, function (err, result){ 
