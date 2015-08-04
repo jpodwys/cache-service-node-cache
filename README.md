@@ -3,6 +3,15 @@
 * A [node-cache](https://github.com/tcs-de/nodecache) plugin for [cache-service](https://github.com/jpodwys/cache-service)
 * AND a standalone node-cache wrapper
 
+#### Features
+
+* Background refresh
+* Robust API
+* Built-in logging with a `verbose` flag.
+* Compatible with `cache-service` and `superagent-cache`
+* Public access to the underlying `node-cache` instance
+* Excellent `.mset()` implementation which allows you to set expirations on a per key, per function call, and/or per `cache-service-cache-module` instance basis.
+
 # Basic Usage
 
 Require and instantiate
@@ -18,14 +27,9 @@ Cache!
 nodeCache.set('key', 'value');
 ```
 
-# Benefits of Using `cache-service-node-cache`
-
-If you're using `cache-service-node-cache` with `cache-service`, the benefits are obvious. However, there are also a couple of reasons you might prefer it to using vanilla [node-cache](https://www.npmjs.com/package/node-cache):
-
-* It adds an excellent `.mset()` implementation which allow you to set expirations on a per key, per function call, and/or per `cache-service-node-cache` instance basis (Vanilla node-cache does not offer `.mset()` at all).
-* Built-in logging with a `verbose` flag.
-
 # Cache Module Configuration Options
+
+`cache-service-node-cache`'s constructor takes an optional config object with any number of the following properties:
 
 ## type
 
@@ -41,6 +45,29 @@ The expiration to include when executing cache set commands. Can be overridden v
 * type: int
 * default: 900
 * measure: seconds
+
+## backgroundRefreshInterval
+
+How frequently should all background refresh-enabled keys be scanned to determine whether they should be refreshed. For a more thorough explanation on `background refresh`, see the [Using Background Refresh](#using-background-refresh) section.
+
+* type: int
+* default: 60000
+* measure: milliseconds
+
+## backgroundRefreshMinTtl
+
+The maximum ttl a scanned background refresh-enabled key can have without triggering a refresh. This number should always be greater than `backgroundRefreshInterval`.
+
+* type: int
+* default: 70000
+* measure: milliseconds
+
+## backgroundRefreshIntervalCheck
+
+Whether to throw an exception if `backgroundRefreshInterval` is greater than `backgroundRefreshMinTtl`. Setting this property to false is highly discouraged.
+
+* type: boolean
+* default: true
 
 ## verbose
 
@@ -73,16 +100,19 @@ Retrieve the values belonging to a series of keys. If a key is not found, it wil
 * err: type: object
 * response: type: object, example: {key: 'value', key2: 'value2'...}
 
-## .set(key, value [, expiraiton, callback])
+## .set(key, value, [expiraiton], [refresh(key, cb)], [callback])
+
+> See the [Using Background Refresh](#using-background-refresh) section for more about the `refresh` and `callback` params.
 
 Set a value by a given key.
 
 * key: type: string
 * callback: type: function
 * expiration: type: int, measure: seconds
+* refresh: type: function
 * callback: type: function
 
-## .mset(obj [, expiration, callback])
+## .mset(obj, [expiration], [callback])
 
 Set multiple values to multiple keys
 
@@ -94,7 +124,7 @@ This function exposes a heirarchy of expiration values as follows:
 * If an object with both `cacheValue` and `expiration` as properties is not present, the `expiration` provided to the `.mset()` argument list will be used.
 * If neither of the above is provided, each cache's `defaultExpiration` will be applied.
 
-## .del(keys [, callback (err, count)])
+## .del(keys, [callback (err, count)])
 
 Delete a key or an array of keys and their associated values.
 
@@ -109,11 +139,48 @@ Flush all keys and values from.
 
 * callback: type: function
 
-# More Node-Cache Methods
+## .db
 
-If you need access to one of node-cache's other functions, you can get at the underlying [`node-cache` instance](https://github.com/tcs-de/nodecache) by tapping into the `.db` property like so:
+This is the underlying [`node-cache` instance](https://github.com/tcs-de/nodecache). If needed, you can access `node-cache` functions I haven't abstracted.
+
+# Using Background Refresh
+
+With a typical cache setup, you're left to find the perfect compromise between having a long expiration so that users don't have to suffer through the worst case load time, and a short expiration so data doesn't get stale. `cache-service-cache-module` eliminates the need to worry about users suffering through the longest wait time by automatically refreshing keys for you. Here's how it works:
+
+#### How do I turn it on?
+
+By default, background refresh is off. It will turn itself on the first time you pass a `refresh` param to `.set()`.
+
+#### Configure
+
+There are three options you can manipulate. See the API section for more information about them.
+
+* `backgroundRefreshInterval`
+* `backgroundRefreshMinTtl`
+* `backgroundRefreshIntervalCheck`
+
+#### Use
+
+Background refresh is exposed via the `.set()` command as follows:
 
 ```javascript
-var underlyingNodeCacheInstance = nodeCacheModule.db;
-underlyingNodeCacheInstance.SOME_OTHER_NODE_CACHE_FUNCTION();
+cacheModule.set('key', 'value', 300, refresh, cb);
+```
+
+If you want to pass `refresh`, you must also pass `cb` because if only four params are passed, `cache-service-node-cache` will assume the fourth param is `cb`.
+
+#### The Refresh Param
+
+###### refresh(key, cb(err, response))
+
+* key: type: string: this is the key that is being refreshed
+* cb: type: function: you must trigger this function to pass the data that should replace the current key's value
+
+The `refresh` param MUST be a function that accepts `key` and a callback function that accepts `err` and `response` as follows:
+
+```javascript
+var refresh = function(key, cb){
+  var response = goGetData();
+  cb(null, response);
+}
 ```
