@@ -14,7 +14,19 @@
 
 # Basic Usage
 
+Add to your package.json. `node-cache` is a peer dependency of `cache-service-node-cache`. This repo is currently tested against `node-cache#4.x`.
+
+```json
+  ...
+  "dependencies": {
+    "cache-service-node-cache": "2.x",
+    "node-cache": "4.x"
+  },
+  ...
+```
+
 Require and instantiate
+
 ```javascript
 var csNodeCache = require('cache-service-node-cache');
 
