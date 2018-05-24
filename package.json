@@ -3,12 +3,14 @@
   "version": "1.1.1",
   "description": "A node-cache plugin for cache-service.",
   "main": "nodeCacheModule.js",
-  "dependencies": {
-    "node-cache": "2.1.1"
+  "dependencies": {},
+  "peerDependencies": {
+    "node-cache": ">=2.1.1"
   },
   "devDependencies": {
     "mocha": "2.2.4",
-    "expect": "1.6.0"
+    "expect": "1.6.0",
+    "node-cache": "latest"
   },
   "scripts": {
     "test": "bin/tests"
